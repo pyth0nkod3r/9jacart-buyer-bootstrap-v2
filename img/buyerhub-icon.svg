@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8DEB6E;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5BC92A;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#grad)"/>
+  <!-- Shopping bag shape -->
+  <path d="M256 120c-44 0-80 36-80 80v40h-30c-17 0-30 13-30 30v150c0 17 13 30 30 30h220c17 0 30-13 30-30V270c0-17-13-30-30-30h-30v-40c0-44-36-80-80-80zm0 40c22 0 40 18 40 40v40h-80v-40c0-22 18-40 40-40z" fill="white"/>
+  <!-- Checkmark inside bag -->
+  <path d="M220 310l30 30 60-60" stroke="white" stroke-width="20" fill="none" stroke-linecap="round" stroke-linejoin="round" style="stroke:#8DEB6E"/>
+</svg>

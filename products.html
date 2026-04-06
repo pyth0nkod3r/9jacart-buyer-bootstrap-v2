@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Products | BuyerHub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/custom.css" rel="stylesheet">
+</head>
+<body>
+  <div id="bh-header"></div>
+  <div id="bh-secondary-nav"></div>
+  <main class="bh-page py-4 py-lg-6">
+    <div class="container-xl px-3 px-lg-4">
+      <nav class="mb-3"><ol class="breadcrumb bh-breadcrumb"><li class="breadcrumb-item"><a href="index.html">Home</a></li><li class="breadcrumb-item active">All Products</li></ol></nav>
+      <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-4">
+        <div>
+          <h1 class="bh-page-title">All Products</h1>
+          <p class="text-sm text-muted mt-1" id="productCount"></p>
+        </div>
+        <div style="max-width:400px" class="w-100">
+          <div class="d-flex gap-2">
+            <input type="text" id="searchInput" placeholder="Search products..." class="form-control bh-form-control flex-grow-1">
+            <button class="btn btn-bh-primary" onclick="filterProducts()"><i class="bi bi-search"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="row g-4">
+        <div class="d-none d-lg-block col-lg-2">
+          <div class="bh-card p-3 position-sticky" style="top:80px">
+            <h6 class="fw-bold mb-3">Categories</h6>
+            <div id="sidebarCats"></div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-10">
+          <div class="row g-3 g-lg-4" id="productsGrid"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div id="bh-footer"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/components.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      BH.initPage({ page: 'products', activeAll: true });
+      var sidebar = document.getElementById('sidebarCats');
+      if (sidebar) {
+        sidebar.innerHTML = BH.mainCategories.map(function(cat) {
+          return '<a href="category.html?cat='+cat.id+'&name='+encodeURIComponent(cat.name)+'" class="d-block py-1 text-sm text-decoration-none" style="color:hsl(var(--foreground))">'+cat.name+'</a>';
+        }).join('');
+      }
+      window.filterProducts = function() {
+        var q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+        var filtered = BH.products.filter(function(p) {
+          if (!q) return true;
+          return p.name.toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q);
+        });
+        renderGrid(filtered);
+      };
+      function renderGrid(products) {
+        var grid = document.getElementById('productsGrid');
+        var count = document.getElementById('productCount');
+        if (count) count.textContent = 'Showing ' + products.length + ' of ' + BH.products.length + ' active products';
+        if (products.length === 0) {
+          grid.innerHTML = '<div class="col-12 text-center py-8"><p class="text-muted">No products found</p></div>';
+          return;
+        }
+        grid.innerHTML = products.map(function(p) {
+          return '<div class="col-6 col-sm-4 col-lg-4 col-xl-3">' + BH.renderProductCard(p) + '</div>';
+        }).join('');
+      }
+      renderGrid(BH.products);
+      var searchInput = document.getElementById('searchInput');
+      if (searchInput) searchInput.addEventListener('input', BH.debounce(filterProducts, 300));
+    });
+  </script>
+</body>
+</html>

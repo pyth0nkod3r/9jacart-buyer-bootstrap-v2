@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart | BuyerHub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/custom.css" rel="stylesheet">
+</head>
+<body>
+  <div id="bh-header"></div>
+  <div id="bh-secondary-nav"></div>
+  <main class="bh-page py-4 py-lg-6">
+    <div class="container-xl px-3 px-lg-4">
+      <nav class="mb-3"><ol class="breadcrumb bh-breadcrumb"><li class="breadcrumb-item"><a href="index.html">Home</a></li><li class="breadcrumb-item active">Shopping Cart</li></ol></nav>
+      <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-4">
+        <div class="d-flex align-items-center gap-3">
+          <a href="products.html" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i><span class="d-none d-sm-inline">Back</span></a>
+          <h1 class="bh-page-title mb-0">Shopping Cart</h1>
+          <span class="badge bg-secondary" id="cartBadge">0 items</span>
+        </div>
+        <button class="btn btn-outline-danger btn-sm" onclick="clearCart()"><i class="bi bi-trash me-1"></i>Clear Cart</button>
+      </div>
+      <div id="cartContent"></div>
+    </div>
+  </main>
+  <div id="bh-footer"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/components.js"></script>
+  <script>
+    function renderCart() {
+      var items = BH.Cart.getItems();
+      var content = document.getElementById('cartContent');
+      var badge = document.getElementById('cartBadge');
+      var totalItems = BH.Cart.getTotalItems();
+      badge.textContent = totalItems + (totalItems === 1 ? ' item' : ' items');
+      if (items.length === 0) {
+        content.innerHTML = '<div class="bh-card text-center p-6"><i class="bi bi-bag fs-1 text-muted d-block mb-3"></i><h3 class="fw-semibold mb-2">Your cart is empty</h3><p class="text-muted mb-4">Looks like you haven\'t added any items to your cart yet.</p><a href="products.html" class="btn btn-bh-primary">Continue Shopping</a></div>';
+        return;
+      }
+      var itemsHtml = items.map(function(item) {
+        var p = item.product;
+        var price = typeof p.price === 'number' ? p.price : (p.price && p.price.current) || 0;
+        var img = Array.isArray(p.images) ? p.images[0] : (p.images && p.images.main) || '';
+        return '<div class="bh-card p-3 mb-3"><div class="d-flex gap-3"><div style="width:80px;height:80px" class="flex-shrink-0"><img src="'+img+'" alt="'+(p.images&&p.images.alt||'')+'" class="w-100 h-100 rounded" style="object-fit:contain"></div><div class="flex-grow-1 min-w-0"><h5 class="fs-6 mb-1"><a href="product.html?id='+p.id+'" class="text-decoration-none" style="color:hsl(var(--foreground))">'+p.name+'</a></h5><p class="text-sm text-muted mb-2">'+BH.formatPrice(price)+'</p><div class="d-flex align-items-center gap-2"><div class="input-group" style="max-width:130px"><button class="btn btn-sm btn-outline-secondary" onclick="BH.Cart.updateQuantity(\''+p.id+'\','+(item.quantity-1)+');renderCart()">-</button><input type="text" value="'+item.quantity+'" class="form-control form-control-sm text-center" readonly><button class="btn btn-sm btn-outline-secondary" onclick="BH.Cart.updateQuantity(\''+p.id+'\','+(item.quantity+1)+');renderCart()">+</button></div><button class="btn btn-sm btn-outline-danger" onclick="BH.Cart.removeItem(\''+p.id+'\');renderCart()"><i class="bi bi-trash"></i></button></div></div><div class="text-end flex-shrink-0"><span class="fw-bold">'+BH.formatPrice(price*item.quantity)+'</span></div></div></div>';
+      }).join('');
+      var subtotal = BH.Cart.getSubtotal();
+      var shipping = BH.Cart.getShipping();
+      var flatRate = BH.Cart.getFlatRate();
+      var total = BH.Cart.getFinalTotal();
+      content.innerHTML = '<div class="row g-4"><div class="col-lg-8">'+itemsHtml+'<div class="bh-card p-4"><div class="d-flex align-items-center justify-content-between"><div><h5 class="fw-medium mb-1">Continue Shopping</h5><p class="text-sm text-muted mb-0">Discover more products you might like</p></div><a href="products.html" class="btn btn-bh-outline btn-sm">Browse Products</a></div></div></div><div class="col-lg-4"><div class="bh-card p-4 position-sticky" style="top:80px"><h5 class="fw-bold mb-3">Order Summary</h5><div class="d-flex justify-content-between mb-2"><span class="text-muted">Subtotal</span><span>'+BH.formatPrice(subtotal)+'</span></div><div class="d-flex justify-content-between mb-2"><span class="text-muted"><i class="bi bi-truck me-1"></i>Shipping</span><span>'+(shipping===0?'Free':BH.formatPrice(shipping))+'</span></div>'+(shipping>0?'<p class="text-xs text-muted mb-2">Free shipping on orders over ₦50,000</p>':'')+'<div class="d-flex justify-content-between mb-2"><span class="text-muted">Handling</span><span>'+BH.formatPrice(flatRate)+'</span></div><hr><div class="d-flex justify-content-between fs-5 fw-bold"><span>Total</span><span>'+BH.formatPrice(total)+'</span></div><a href="checkout.html" class="btn btn-bh-primary w-100 mt-3">Proceed to Checkout</a></div></div></div>';
+    }
+    window.clearCart = function() { if(confirm('Clear all items from your cart?')) { BH.Cart.clearCart(); renderCart(); } };
+    document.addEventListener('DOMContentLoaded', function() {
+      BH.initPage({ page: 'cart' });
+      renderCart();
+      document.addEventListener('bh:cartupdate', renderCart);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ | BuyerHub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/custom.css" rel="stylesheet">
+</head>
+<body>
+  <div id="bh-header"></div>
+  <main class="bh-page py-4 py-lg-6">
+    <div class="container-xl px-3 px-lg-4">
+      <nav class="mb-3"><ol class="breadcrumb bh-breadcrumb"><li class="breadcrumb-item"><a href="index.html">Home</a></li><li class="breadcrumb-item active">FAQ</li></ol></nav>
+      <h1 class="bh-page-title mb-2">Frequently Asked Questions</h1>
+      <p class="text-muted mb-4">Find answers to commonly asked questions about BuyerHub.</p>
+      <div class="bh-card p-4" id="faqAccordion"></div>
+    </div>
+  </main>
+  <div id="bh-footer"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/components.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      BH.initPage();
+      var faqs = BH.faqs || [];
+      document.getElementById('faqAccordion').innerHTML = '<div class="accordion" id="faqAcc">' +
+        faqs.map(function(faq, i) {
+          return '<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq'+i+'">'+faq.question+'</button></h2><div id="faq'+i+'" class="accordion-collapse collapse" data-bs-parent="#faqAcc"><div class="accordion-body text-muted">'+faq.answer+'</div></div></div>';
+        }).join('') + '</div>';
+    });
+  </script>
+</body>
+</html>

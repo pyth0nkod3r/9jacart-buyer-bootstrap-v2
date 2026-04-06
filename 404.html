@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 - Page Not Found | BuyerHub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/custom.css" rel="stylesheet">
+</head>
+<body>
+  <div id="bh-header"></div>
+  <main class="bh-page py-8">
+    <div class="container-xl px-3 px-lg-4 text-center">
+      <div style="max-width:500px;margin:0 auto">
+        <div class="mb-4">
+          <span style="font-size:6rem;color:hsl(var(--muted-foreground))">🛒️</span>
+        </div>
+        <h1 class="fw-bold mb-3">404 - Page Not Found</h1>
+        <p class="text-muted mb-2">The page you're looking for doesn't exist or has been moved.</p>
+        <p class="text-muted mb-4">Please check the URL or try searching for what you need.</p>
+        <div class="d-flex gap-2 justify-content-center">
+          <a href="index.html" class="btn btn-bh-primary">Go Home</a>
+          <a href="products.html" class="btn btn-bh-outline">Browse Products</a>
+          <a href="contact.html" class="btn btn-outline-secondary">Contact Support</a>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div id="bh-footer"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/components.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() { BH.initPage(); });
+  </script>
+</body>
+</html>

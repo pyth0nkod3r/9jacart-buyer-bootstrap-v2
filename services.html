@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Services | BuyerHub</title>
+  <link rel="icon" type="image/svg+xml" href="img/buyerhub-icon.svg">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/custom.css" rel="stylesheet">
+  <style>
+    .bh-service-category-card {
+      background: hsl(var(--card));
+      border: 1px solid hsl(var(--border));
+      border-radius: 0.75rem;
+      overflow: hidden;
+      transition: box-shadow 0.3s, transform 0.3s;
+    }
+    .bh-service-category-card:hover {
+      box-shadow: 0 8px 24px hsla(var(--foreground), 0.1);
+      transform: scale(1.01);
+    }
+    .bh-service-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border: 1px solid hsl(var(--border));
+      border-radius: 0.5rem;
+      text-decoration: none;
+      color: hsl(var(--foreground));
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 0.75rem;
+    }
+    .bh-service-item:last-child { margin-bottom: 0; }
+    .bh-service-item:hover {
+      border-color: hsl(var(--primary));
+      background: hsla(var(--primary), 0.05);
+      color: hsl(var(--foreground));
+    }
+    .bh-service-item:hover .bh-service-item-icon { background: hsla(var(--primary), 0.1); color: hsl(var(--primary)); }
+    .bh-service-item:hover .bh-service-item-arrow { color: hsl(var(--primary)); }
+    .bh-service-item-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      background: hsl(var(--secondary));
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: hsl(var(--muted-foreground));
+      flex-shrink: 0;
+      transition: background 0.2s, color 0.2s;
+    }
+    .bh-service-item-arrow { color: hsl(var(--muted-foreground)); flex-shrink: 0; transition: color 0.2s; }
+    .bh-why-box {
+      background: hsla(var(--secondary), 0.3);
+      border-radius: 1rem;
+      padding: 2rem;
+    }
+    .bh-why-icon {
+      width: 4rem;
+      height: 4rem;
+      background: hsla(var(--primary), 0.1);
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="bh-header"></div>
+  <div id="bh-secondary-nav"></div>
+
+  <main class="bh-page py-4 py-lg-6">
+    <div class="container-xl px-3 px-lg-4">
+
+      <!-- Header Section -->
+      <div class="text-center mb-5 mb-lg-6">
+        <h1 class="bh-page-title mb-3">Our Services</h1>
+        <p class="text-muted mx-auto" style="max-width:520px;font-size:1.05rem">
+          Quick and secure payment solutions for all your daily needs.
+          From mobile top-ups to bill payments, we've got you covered.
+        </p>
+      </div>
+
+      <!-- Service Categories -->
+      <div class="row g-4 mb-5 mb-lg-6">
+        <!-- Mobile Top Up -->
+        <div class="col-md-6">
+          <div class="bh-service-category-card h-100">
+            <div class="p-4 border-bottom" style="border-color:hsl(var(--border))">
+              <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-3">
+                <div class="rounded d-flex align-items-center justify-content-center flex-shrink-0" style="width:3rem;height:3rem;background:#3b82f6">
+                  <i class="bi bi-phone fs-5 text-white"></i>
+                </div>
+                <div>
+                  <h4 class="fw-bold mb-1">Mobile Top Up</h4>
+                  <p class="text-muted text-sm mb-0">Recharge airtime and buy data bundles for all networks</p>
+                </div>
+              </div>
+            </div>
+            <div class="p-4">
+              <a href="buy-airtime.html" class="bh-service-item">
+                <div class="d-flex align-items-center gap-3 flex-grow-1 min-w-0">
+                  <div class="bh-service-item-icon"><i class="bi bi-telephone"></i></div>
+                  <div>
+                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                      <span class="fw-medium">Buy Airtime</span>
+                      <span class="badge text-bg-secondary" style="font-size:0.7rem">Popular</span>
+                    </div>
+                    <p class="text-muted text-xs mb-0">Instant airtime recharge</p>
+                  </div>
+                </div>
+                <i class="bi bi-arrow-right bh-service-item-arrow ms-3"></i>
+              </a>
+              <a href="buy-data.html" class="bh-service-item">
+                <div class="d-flex align-items-center gap-3 flex-grow-1 min-w-0">
+                  <div class="bh-service-item-icon"><i class="bi bi-wifi"></i></div>
+                  <div>
+                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                      <span class="fw-medium">Buy Data</span>
+                      <span class="badge text-bg-secondary" style="font-size:0.7rem">Popular</span>
+                    </div>
+                    <p class="text-muted text-xs mb-0">Data bundles for all networks</p>
+                  </div>
+                </div>
+                <i class="bi bi-arrow-right bh-service-item-arrow ms-3"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <!-- Bills Payment -->
+        <div class="col-md-6">
+          <div class="bh-service-category-card h-100">
+            <div class="p-4 border-bottom" style="border-color:hsl(var(--border))">
+              <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-3">
+                <div class="rounded d-flex align-items-center justify-content-center flex-shrink-0" style="width:3rem;height:3rem;background:#22c55e">
+                  <i class="bi bi-receipt fs-5 text-white"></i>
+                </div>
+                <div>
+                  <h4 class="fw-bold mb-1">Bills Payment</h4>
+                  <p class="text-muted text-sm mb-0">Pay your electricity bills and other utilities</p>
+                </div>
+              </div>
+            </div>
+            <div class="p-4">
+              <a href="prepaid.html" class="bh-service-item">
+                <div class="d-flex align-items-center gap-3 flex-grow-1 min-w-0">
+                  <div class="bh-service-item-icon"><i class="bi bi-lightning-charge"></i></div>
+                  <div>
+                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                      <span class="fw-medium">Prepaid Electricity</span>
+                      <span class="badge text-bg-secondary" style="font-size:0.7rem">Popular</span>
+                    </div>
+                    <p class="text-muted text-xs mb-0">Buy electricity units</p>
+                  </div>
+                </div>
+                <i class="bi bi-arrow-right bh-service-item-arrow ms-3"></i>
+              </a>
+              <a href="postpaid.html" class="bh-service-item">
+                <div class="d-flex align-items-center gap-3 flex-grow-1 min-w-0">
+                  <div class="bh-service-item-icon"><i class="bi bi-credit-card"></i></div>
+                  <div>
+                    <div class="mb-1">
+                      <span class="fw-medium">Postpaid Bills</span>
+                    </div>
+                    <p class="text-muted text-xs mb-0">Pay monthly bills</p>
+                  </div>
+                </div>
+                <i class="bi bi-arrow-right bh-service-item-arrow ms-3"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Why Choose Our Services -->
+      <div class="bh-why-box mb-5 mb-lg-6">
+        <h2 class="fw-bold text-center mb-5" style="font-size:clamp(1.25rem,3vw,1.75rem)">Why Choose Our Services?</h2>
+        <div class="row g-4 g-lg-6 text-center">
+          <div class="col-sm-6 col-lg-4">
+            <div class="bh-why-icon">
+              <i class="bi bi-lightning-charge fs-3" style="color:hsl(var(--primary))"></i>
+            </div>
+            <h5 class="fw-semibold mb-2">Instant Processing</h5>
+            <p class="text-muted text-sm mb-0">All transactions are processed instantly with real-time confirmation</p>
+          </div>
+          <div class="col-sm-6 col-lg-4">
+            <div class="bh-why-icon">
+              <i class="bi bi-credit-card fs-3" style="color:hsl(var(--primary))"></i>
+            </div>
+            <h5 class="fw-semibold mb-2">Secure Payments</h5>
+            <p class="text-muted text-sm mb-0">Bank-level security with encrypted transactions for your safety</p>
+          </div>
+          <div class="col-sm-6 col-lg-4 mx-auto">
+            <div class="bh-why-icon">
+              <i class="bi bi-headset fs-3" style="color:hsl(var(--primary))"></i>
+            </div>
+            <h5 class="fw-semibold mb-2">24/7 Support</h5>
+            <p class="text-muted text-sm mb-0">Round-the-clock customer support for all your service needs</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="text-center">
+        <h2 class="fw-bold mb-4 mb-lg-5" style="font-size:clamp(1.25rem,3vw,1.75rem)">Quick Actions</h2>
+        <div class="d-flex flex-column flex-sm-row flex-wrap justify-content-center gap-3">
+          <a href="buy-airtime.html" class="btn btn-bh-primary btn-lg d-flex align-items-center justify-content-center gap-2" style="min-width:180px">
+            <i class="bi bi-telephone"></i> Buy Airtime
+          </a>
+          <a href="buy-data.html" class="btn btn-bh-outline btn-lg d-flex align-items-center justify-content-center gap-2" style="min-width:180px">
+            <i class="bi bi-wifi"></i> Buy Data
+          </a>
+          <a href="prepaid.html" class="btn btn-bh-outline btn-lg d-flex align-items-center justify-content-center gap-2" style="min-width:180px">
+            <i class="bi bi-lightning-charge"></i> Pay Electricity
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="bh-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/components.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      BH.initPage({ page: 'services', activeCategory: 'services' });
+    });
+  </script>
+</body>
+</html>

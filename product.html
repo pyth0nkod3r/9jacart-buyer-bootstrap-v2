@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Detail | BuyerHub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/custom.css" rel="stylesheet">
+</head>
+<body>
+  <div id="bh-header"></div>
+  <div id="bh-secondary-nav"></div>
+  <main class="bh-page py-4 py-lg-6">
+    <div class="container-xl px-3 px-lg-4">
+      <div id="breadcrumb"></div>
+      <div class="row g-4 g-lg-6" id="productDetail"></div>
+    </div>
+  </main>
+  <div id="bh-footer"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/components.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      BH.initPage();
+      var params = new URLSearchParams(window.location.search);
+      var id = params.get('id') || '1';
+      var product = BH.products.find(function(p) { return p.id === id; }) || BH.products[0];
+
+      document.getElementById('breadcrumb').innerHTML = BH.renderBreadcrumb([
+        { label: 'Products', href: 'products.html' },
+        { label: product.name }
+      ]);
+
+      var price = typeof product.price === 'number' ? product.price : (product.price && product.price.current) || 0;
+      var originalPrice = product.price && product.price.original;
+      var discount = product.price && product.price.discount;
+      var imgSrc = Array.isArray(product.images) ? product.images[0] : (product.images && product.images.main) || '';
+      var gallery = (product.images && product.images.gallery) || [imgSrc];
+      var specs = product.specifications || {};
+      var features = product.features || [];
+      var shipping = product.shipping || {};
+      var returns = product.returns || {};
+      var warranty = product.warranty || {};
+
+      var detail = document.getElementById('productDetail');
+      detail.innerHTML = '\
+      <div class="col-12 col-lg-6">\
+        <div class="bh-card p-2 mb-3">\
+          <img id="mainImage" src="'+gallery[0]+'" alt="'+(product.images&&product.images.alt||'')+'" class="w-100 rounded" style="aspect-ratio:1;object-fit:contain">\
+        </div>\
+        <div class="d-flex gap-2 overflow-auto">' +
+          gallery.map(function(img, i) {
+            return '<div class="bh-card p-1 flex-shrink-0" style="width:72px;height:72px;cursor:pointer" onclick="document.getElementById(\'mainImage\').src=\''+img+'\'"><img src="'+img+'" class="w-100 h-100 rounded" style="object-fit:contain"></div>';
+          }).join('') + '\
+        </div>\
+      </div>\
+      <div class="col-12 col-lg-6">\
+        <h1 class="fw-bold fs-4 fs-lg-5 mb-2">'+product.name+'</h1>\
+        <div class="d-flex align-items-center gap-2 mb-3">' +
+          BH.renderStars(product.reviews && product.reviews.average || 0) +
+          '<span class="text-sm text-muted">(' + (product.reviews && product.reviews.total || 0) + ' reviews)</span>\
+        </div>\
+        <div class="d-flex align-items-center gap-3 mb-3">\
+          <span class="fs-4 fw-bold" style="color:hsl(var(--destructive))">'+BH.formatPrice(price)+'</span>' +
+          (originalPrice && originalPrice > price ? '<span class="text-muted text-decoration-line-through">'+BH.formatPrice(originalPrice)+'</span>' : '') +
+          (discount && discount.percentage > 0 ? '<span class="bh-discount-badge" style="position:static;font-size:0.85rem">-'+Math.round(discount.percentage)+'% OFF</span>' : '') + '\
+        </div>\
+        <p class="text-sm mb-3" style="color:hsl(var(--muted-foreground))">'+(product.description||'')+'</p>\
+        <div class="bh-card p-3 mb-3">\
+          <h6 class="fw-bold mb-2">Features</h6>\
+          <ul class="list-unstyled mb-0">' +
+            features.map(function(f) { return '<li class="d-flex align-items-center gap-2 mb-1"><i class="bi bi-check-circle text-success"></i><span class="text-sm">'+f+'</span></li>'; }).join('') + '\
+          </ul>\
+        </div>\
+        <div class="d-flex gap-2 mb-3">\
+          <div class="input-group" style="max-width:140px">\
+            <button class="btn btn-outline-secondary" onclick="updateQty(-1)">-</button>\
+            <input type="number" id="qty" value="1" min="1" class="form-control text-center bh-form-control">\
+            <button class="btn btn-outline-secondary" onclick="updateQty(1)">+</button>\
+          </div>\
+          <button class="btn btn-bh-primary flex-grow-1" onclick="addToCart()"><i class="bi bi-cart3 me-2"></i>Add To Cart</button>\
+          <button class="btn btn-outline-secondary" onclick="BH.toggleWishlist(\''+product.id+'\')"><i class="bi bi-heart' + (BH.Wishlist.isItemInWishlist(product.id) ? '-fill text-danger' : '') + '"></i></button>\
+        </div>\
+        <div class="bh-card p-3">\
+          <div class="d-flex align-items-center gap-2 mb-2"><i class="bi bi-truck"></i><span class="text-sm">'+(shipping.estimatedDelivery||'Standard delivery')+'</span></div>\
+          ' + (shipping.freeShipping ? '<div class="d-flex align-items-center gap-2 mb-2"><i class="bi bi-check-circle text-success"></i><span class="text-sm">Free Shipping</span></div>' : '') + '\
+          ' + (returns.returnable ? '<div class="d-flex align-items-center gap-2 mb-2"><i class="bi bi-arrow-return-left text-info"></i><span class="text-sm">Returnable within ' + returns.period + ' ' + returns.unit + '</span></div>' : '') + '\
+          ' + (warranty.period ? '<div class="d-flex align-items-center gap-2"><i class="bi bi-shield-check text-warning"></i><span class="text-sm">' + warranty.period + ' ' + warranty.unit + ' ' + warranty.type + ' warranty</span></div>' : '') + '\
+        </div>\
+      </div>\
+      <div class="col-12 mt-4">\
+        <div class="bh-card p-4">\
+          <h5 class="fw-bold mb-3">Specifications</h5>\
+          <div class="row">' +
+            Object.keys(specs).map(function(key) {
+              return '<div class="col-sm-6 col-md-4 mb-2"><span class="text-muted text-sm">'+key+':</span><br><span class="fw-medium text-sm">'+specs[key]+'</span></div>';
+            }).join('') + '\
+          </div>\
+        </div>\
+      </div>';
+
+      window.updateQty = function(delta) {
+        var input = document.getElementById('qty');
+        var val = parseInt(input.value) + delta;
+        if (val < 1) val = 1;
+        input.value = val;
+      };
+
+      window.addToCart = function() {
+        var qty = parseInt(document.getElementById('qty').value) || 1;
+        BH.Cart.addItem(product, qty);
+      };
+    });
+  </script>
+</body>
+</html>

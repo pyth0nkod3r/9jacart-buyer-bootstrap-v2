@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | BuyerHub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/custom.css" rel="stylesheet">
+</head>
+<body>
+  <div id="bh-header"></div>
+  <main class="bh-page py-4 py-lg-6">
+    <div class="container-xl px-3 px-lg-4">
+      <nav class="mb-3"><ol class="breadcrumb bh-breadcrumb"><li class="breadcrumb-item"><a href="index.html">Home</a></li><li class="breadcrumb-item"><a href="cart.html">Cart</a></li><li class="breadcrumb-item active">Checkout</li></ol></nav>
+      <h1 class="bh-page-title mb-4">Checkout</h1>
+      <div id="checkoutContent"></div>
+    </div>
+  </main>
+  <div id="bh-footer"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/components.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      BH.initPage();
+      var items = BH.Cart.getItems();
+      var content = document.getElementById('checkoutContent');
+      if (items.length === 0) {
+        content.innerHTML = '<div class="text-center py-8"><h2 class="fw-bold mb-3">Your Cart is Empty</h2><p class="text-muted mb-4">Add some products to checkout</p><a href="products.html" class="btn btn-bh-primary">Browse Products</a></div>';
+        return;
+      }
+      var user = BH.Auth.getUser() || {};
+      var subtotal = BH.Cart.getSubtotal();
+      var shipping = BH.Cart.getShipping();
+      var flatRate = BH.Cart.getFlatRate();
+      var total = subtotal + shipping + flatRate;
+      content.innerHTML = '\
+      <div class="row g-4">\
+        <div class="col-lg-7">\
+          <div class="bh-card p-4 mb-4">\
+            <h5 class="fw-semibold mb-3"><i class="bi bi-geo-alt me-2"></i>Billing Details</h5>\
+            <div class="row g-3">\
+              <div class="col-sm-6"><label class="form-label text-sm">First Name *</label><input name="firstName" value="'+(user.firstName||'')+'" class="form-control bh-form-control"></div>\
+              <div class="col-sm-6"><label class="form-label text-sm">Last Name *</label><input name="lastName" value="'+(user.lastName||'')+'" class="form-control bh-form-control"></div>\
+              <div class="col-12"><label class="form-label text-sm">Company Name (Optional)</label><input name="companyName" placeholder="Company name" class="form-control bh-form-control"></div>\
+              <div class="col-12"><label class="form-label text-sm">Street Address *</label><input name="streetAddress" placeholder="House number and street name" class="form-control bh-form-control"></div>\
+              <div class="col-12"><label class="form-label text-sm">Apartment (Optional)</label><input name="apartment" placeholder="Apartment, suite, unit, etc." class="form-control bh-form-control"></div>\
+              <div class="col-sm-6"><label class="form-label text-sm">Town/City *</label><input name="townCity" class="form-control bh-form-control"></div>\
+              <div class="col-sm-6"><label class="form-label text-sm">Phone *</label><input name="phoneNumber" value="'+(user.phone||'')+'" class="form-control bh-form-control"></div>\
+              <div class="col-12"><label class="form-label text-sm">Email Address *</label><input name="emailAddress" type="email" value="'+(user.email||'')+'" class="form-control bh-form-control"></div>\
+            </div>\
+          </div>\
+          <div class="bh-card p-4">\
+            <h5 class="fw-semibold mb-3"><i class="bi bi-credit-card me-2"></i>Payment Method</h5>\
+            <div class="space-y-2">\
+              <label class="d-flex align-items-center gap-3 p-3 border rounded" style="cursor:pointer">\
+                <input type="radio" name="payment" value="bank-card" checked> <span>Bank Card (Paystack)</span>\
+              </label>\
+              <label class="d-flex align-items-center gap-3 p-3 border rounded opacity-50" style="cursor:pointer">\
+                <input type="radio" name="payment" value="cod" disabled> <span>Cash on Delivery (Coming Soon)</span>\
+              </label>\
+            </div>\
+          </div>\
+        </div>\
+        <div class="col-lg-5">\
+          <div class="bh-card p-4 position-sticky" style="top:80px">\
+            <h5 class="fw-semibold mb-3">Order Summary</h5>\
+            <div class="space-y-2 mb-3">' +
+              items.map(function(item) {
+                var p = item.product;
+                var price = typeof p.price === 'number' ? p.price : (p.price && p.price.current) || 0;
+                return '<div class="d-flex justify-content-between text-sm"><span class="text-muted">'+p.name+' x '+item.quantity+'</span><span>'+BH.formatPrice(price*item.quantity)+'</span></div>';
+              }).join('') + '\
+            </div>\
+            <hr>\
+            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Subtotal</span><span>'+BH.formatPrice(subtotal)+'</span></div>\
+            <div class="d-flex justify-content-between mb-2"><span class="text-muted"><i class="bi bi-truck me-1"></i>Shipping</span><span>'+(shipping===0?'Free':BH.formatPrice(shipping))+'</span></div>'+(shipping>0?'<p class="text-xs text-muted">Free shipping on orders over ₦50,000</p>':'')+'\
+            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Handling</span><span>'+BH.formatPrice(flatRate)+'</span></div>\
+            <div class="d-flex justify-content-between fs-5 fw-bold pt-2 border-top"><span>Total</span><span>'+BH.formatPrice(total)+'</span></div>\
+            <button class="btn btn-bh-primary w-100 mt-3" onclick="placeOrder()">Place Order</button>\
+          </div>\
+        </div>\
+      </div>';
+      window.placeOrder = function() {
+        BH.Cart.clearCart();
+        window.location.href = 'checkout-success.html';
+      };
+    });
+  </script>
+</body>
+</html>

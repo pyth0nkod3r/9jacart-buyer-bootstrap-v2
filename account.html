@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account | BuyerHub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/custom.css" rel="stylesheet">
+</head>
+<body>
+  <div id="bh-header"></div>
+  <main class="bh-page py-4 py-lg-6">
+    <div class="container-xl px-3 px-lg-4">
+      <div class="mb-3"><ol class="breadcrumb bh-breadcrumb"><li class="breadcrumb-item"><a href="index.html">Home</a></li><li class="breadcrumb-item active">My Account</li></ol></div>
+      <h1 class="mb-4">Welcome! <span data-user-name>John</span></h1>
+      <div class="row g-4">
+        <div class="col-lg-3">
+          <div class="bh-card p-3">
+            <nav class="nav flex-column gap-1">
+              <a class="nav-link bh-account-link active" href="#" onclick="showSection('profile',this)"><i class="bi bi-person me-2"></i>Profile</a>
+              <a class="nav-link bh-account-link" href="#" onclick="showSection('orders',this)"><i class="bi bi-box me-2"></i>Orders</a>
+              <a class="nav-link bh-account-link" href="#" onclick="showSection('addresses',this)"><i class="bi bi-geo-alt me-2"></i>Addresses</a>
+              <a class="nav-link bh-account-link" href="#" onclick="showSection('wishlist',this)"><i class="bi bi-heart me-2"></i>Wishlist</a>
+              <a class="nav-link bh-account-link" href="contact-admin.html"><i class="bi bi-headset me-2"></i>Contact Support</a>
+              <hr>
+              <a class="nav-link text-danger" href="#" onclick="event.preventDefault();BH.Auth.logout();window.location.href='index.html'"><i class="bi bi-box-arrow-left me-2"></i>Sign Out</a>
+            </nav>
+          </div>
+        </div>
+        <div class="col-lg-9">
+          <div class="bh-card p-4" id="accountContent"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div id="bh-footer"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/components.js"></script>
+  <script>
+    function showSection(section, el) {
+      if (el) { event.preventDefault(); document.querySelectorAll('.bh-account-link').forEach(function(l){l.classList.remove('active')}); el.classList.add('active'); }
+      var content = document.getElementById('accountContent');
+      var user = BH.Auth.getUser() || BH.mockUser;
+      if (section === 'profile') {
+        content.innerHTML = '<h4 class="fw-bold mb-4">Your Profile</h4><div class="row g-3"><div class="col-sm-6"><label class="form-label text-sm">First Name</label><input class="form-control bh-form-control" value="'+(user.firstName||'')+'"></div><div class="col-sm-6"><label class="form-label text-sm">Last Name</label><input class="form-control bh-form-control" value="'+(user.lastName||'')+'"></div><div class="col-12"><label class="form-label text-sm">Email</label><input class="form-control bh-form-control" value="'+(user.email||'')+'" readonly></div><div class="col-12"><label class="form-label text-sm">Phone</label><input class="form-control bh-form-control" value="'+(user.phone||'')+'"></div><div class="col-12"><button class="btn btn-bh-primary" onclick="BH.showToast(\'Profile updated!\')">Save Changes</button></div></div>';
+      } else if (section === 'orders') {
+        content.innerHTML = '<h4 class="fw-bold mb-4">Your Orders</h4><div class="text-center py-4"><a href="orders.html" class="btn btn-bh-primary">View All Orders</a></div>';
+      } else if (section === 'addresses') {
+        var addrs = BH.addresses || [];
+        content.innerHTML = '<h4 class="fw-bold mb-4">Your Addresses</h4>' + addrs.map(function(a) {
+          return '<div class="bh-card p-3 mb-2"><p class="fw-medium mb-1">'+a.streetAddress+'</p><p class="text-sm text-muted mb-0">'+a.city+', '+a.state+' '+a.zipCode+'</p>'+(a.isDefault?'<span class="badge bg-primary mt-2">Default</span>':'')+'</div>';
+        }).join('') + '<button class="btn btn-bh-outline mt-2">Add New Address</button>';
+      } else if (section === 'wishlist') {
+        content.innerHTML = '<h4 class="fw-bold mb-4">Your Wishlist</h4><div class="text-center py-4"><a href="wishlist.html" class="btn btn-bh-primary">View Wishlist</a></div>';
+      }
+    }
+    document.addEventListener('DOMContentLoaded', function() { BH.initPage(); showSection('profile'); });
+  </script>
+</body>
+</html>

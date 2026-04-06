@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Support | BuyerHub</title>
+  <link rel="icon" type="image/svg+xml" href="img/buyerhub-icon.svg">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/custom.css" rel="stylesheet">
+</head>
+<body>
+  <div id="bh-header"></div>
+  <main class="bh-page py-4 py-lg-6">
+    <div class="container-xl px-3 px-lg-4">
+      <!-- Breadcrumb -->
+      <nav class="mb-4">
+        <ol class="breadcrumb bh-breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item"><a href="account.html">My Account</a></li>
+          <li class="breadcrumb-item active">Contact Support</li>
+        </ol>
+      </nav>
+
+      <!-- Page Header -->
+      <div class="mb-5">
+        <div class="d-flex align-items-center gap-3 mb-2">
+          <i class="bi bi-chat-dots" style="font-size:2rem;color:hsl(var(--primary))"></i>
+          <h1 class="bh-page-title mb-0">Contact Support</h1>
+        </div>
+        <p class="text-muted">Have a question or need assistance? Send us a message and we'll get back to you as soon as possible.</p>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="row g-4 justify-content-start">
+        <div class="col-lg-9 col-xl-7">
+          <div class="bh-card p-4 p-lg-5">
+            <h5 class="fw-semibold mb-4">Send a Message</h5>
+            <div id="formSuccess" class="alert alert-success d-none mb-4" role="alert">
+              Your message has been sent successfully! We will get back to you soon.
+            </div>
+            <div id="formError" class="alert alert-danger d-none mb-4" role="alert"></div>
+
+            <form id="contactForm" onsubmit="handleContactSubmit(event)">
+              <!-- Name -->
+              <div class="mb-4">
+                <label for="contactName" class="form-label text-sm fw-medium">Name</label>
+                <input
+                  type="text"
+                  id="contactName"
+                  name="name"
+                  class="form-control bh-form-control"
+                  placeholder="Your full name"
+                  required
+                >
+              </div>
+              <!-- Email -->
+              <div class="mb-4">
+                <label for="contactEmail" class="form-label text-sm fw-medium">Email</label>
+                <input
+                  type="email"
+                  id="contactEmail"
+                  name="email"
+                  class="form-control bh-form-control"
+                  placeholder="Your email address"
+                  required
+                >
+              </div>
+              <!-- Phone Number -->
+              <div class="mb-4">
+                <label for="contactPhone" class="form-label text-sm fw-medium">Phone Number</label>
+                <input
+                  type="tel"
+                  id="contactPhone"
+                  name="phoneNumber"
+                  class="form-control bh-form-control"
+                  placeholder="Enter your phone number"
+                >
+              </div>
+              <!-- Subject -->
+              <div class="mb-4">
+                <label for="contactSubject" class="form-label text-sm fw-medium">
+                  Subject <span class="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="contactSubject"
+                  name="subject"
+                  class="form-control bh-form-control"
+                  placeholder="Enter the subject of your message"
+                  required
+                >
+              </div>
+              <!-- Message -->
+              <div class="mb-4">
+                <label for="contactMessage" class="form-label text-sm fw-medium">
+                  Message <span class="text-danger">*</span>
+                </label>
+                <textarea
+                  id="contactMessage"
+                  name="message"
+                  class="form-control bh-form-control"
+                  rows="6"
+                  placeholder="Enter your message here..."
+                  required
+                ></textarea>
+              </div>
+              <!-- Submit -->
+              <div class="d-flex justify-content-end gap-3 pt-2">
+                <button type="submit" class="btn btn-bh-primary d-flex align-items-center gap-2" id="submitBtn">
+                  <i class="bi bi-send"></i> Send Message
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div id="bh-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/components.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      BH.initPage();
+
+      // Pre-fill form from auth user
+      var user = BH.Auth.getUser();
+      if (user) {
+        var nameEl = document.getElementById('contactName');
+        var emailEl = document.getElementById('contactEmail');
+        var phoneEl = document.getElementById('contactPhone');
+        if (nameEl) { nameEl.value = (user.firstName + ' ' + user.lastName).trim(); nameEl.readOnly = true; }
+        if (emailEl) { emailEl.value = user.email || ''; emailEl.readOnly = true; }
+        if (phoneEl && user.phone) phoneEl.value = user.phone;
+      }
+    });
+
+    function handleContactSubmit(e) {
+      e.preventDefault();
+      var btn = document.getElementById('submitBtn');
+      var successEl = document.getElementById('formSuccess');
+      var errorEl = document.getElementById('formError');
+      successEl.classList.add('d-none');
+      errorEl.classList.add('d-none');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Sending...';
+      // Simulate async submit
+      setTimeout(function() {
+        successEl.classList.remove('d-none');
+        document.getElementById('contactSubject').value = '';
+        document.getElementById('contactMessage').value = '';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-send"></i> Send Message';
+        BH.showToast('Message sent successfully!');
+      }, 800);
+    }
+  </script>
+</body>
+</html>

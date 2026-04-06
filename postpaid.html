@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Postpaid Bills | BuyerHub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/custom.css" rel="stylesheet">
+</head>
+<body>
+  <div id="bh-header"></div>
+  <main class="bh-page py-4 py-lg-6">
+    <div class="container-xl px-3 px-lg-4" style="max-width:600px">
+      <nav class="mb-3"><ol class="breadcrumb bh-breadcrumb"><li class="breadcrumb-item"><a href="index.html">Home</a></li><li class="breadcrumb-item"><a href="services.html">Services</a></li><li class="breadcrumb-item active">Postpaid Bills</li></ol></nav>
+      <h1 class="bh-page-title mb-4"><i class="bi bi-receipt me-2"></i>Postpaid Bills</h1>
+      <div class="bh-card p-4">
+        <form onsubmit="event.preventDefault();BH.showToast('Bill paid successfully!')">
+          <div class="mb-3"><label class="form-label">Bill Type</label>
+            <select class="form-select bh-form-control" required>
+              <option value="">Select Bill Type</option>
+              <option value="dstv">DSTV</option>
+              <option value="gotv">GOtv</option>
+              <option value="startimes">Startimes</option>
+            </select>
+          </div>
+          <div class="mb-3"><label class="form-label">Smartcard/IUC Number</label><input class="form-control bh-form-control" placeholder="Enter smartcard or IUC number" required></div>
+          <div class="mb-3"><label class="form-label">Package</label>
+            <select class="form-select bh-form-control" required>
+              <option value="">Select Package</option>
+              <option value="basic">Basic Package</option>
+              <option value="standard">Standard Package</option>
+              <option value="premium">Premium Package</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-bh-primary w-100">Pay Bill</button>
+        </form>
+      </div>
+    </div>
+  </main>
+  <div id="bh-footer"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/components.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() { BH.initPage(); });
+  </script>
+</body>
+</html>
