@@ -26,7 +26,7 @@
 
     container.innerHTML = '\
     <header class="bh-header sticky-top">\
-      <div class="container-xl px-3 px-lg-4 py-2 py-lg-3">\
+      <div class="bh-container px-3 px-lg-4 py-2 py-lg-3">\
         <div class="d-flex align-items-center justify-content-between gap-3 d-lg-none mb-2">\
           <button class="btn btn-sm p-2" onclick="BH.toggleMobileMenu()" aria-label="Menu">\
             <i class="bi bi-list fs-5"></i>\
@@ -203,7 +203,7 @@
 
     container.innerHTML = '\
     <nav class="bh-secondary-nav">\
-      <div class="container-xl px-4">\
+      <div class="bh-container px-4">\
         <div class="d-flex align-items-center gap-4 py-2 overflow-auto" style="scrollbar-width:none">\
           <a href="products.html" class="bh-secondary-link ' + (options.activeAll ? 'active' : '') + '">All</a>\
           ' + catsHtml + '\
@@ -225,7 +225,7 @@
 
     container.innerHTML = '\
     <footer class="bh-footer">\
-      <div class="container-xl px-4 py-8 py-lg-12">\
+      <div class="bh-container px-4 py-8 py-lg-12">\
         <div class="row g-6 g-lg-8 mb-8 mb-lg-12">\
           <div class="col-sm-6 col-lg-4 mx-auto text-center text-lg-start">\
             <h3 class="text-lg fw-semibold mb-4">Know Us More</h3>\
@@ -290,7 +290,7 @@
         </div>\
       </div>\
       <div class="bh-footer-bottom">\
-        <div class="container-xl px-4 py-3">\
+        <div class="bh-container px-4 py-3">\
           <p class="text-center text-sm mb-0">&copy; Copyright ' + year + '. All rights reserved.</p>\
         </div>\
       </div>\

@@ -1,21 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Orders | BuyerHub</title>
+  <!-- SEO meta (P0-A5) -->
+  <meta name="description"
+    content="View and manage all your BuyerHub orders. Track shipments, leave reviews, and reorder favorites.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="BuyerHub">
+  <meta property="og:title" content="My Orders | BuyerHub">
+  <meta property="og:description"
+    content="View and manage all your BuyerHub orders. Track shipments, leave reviews, and reorder favorites.">
+  <meta property="og:url" content="https://www.buyerhub.com/orders.html">
+  <meta property="og:image" content="https://www.buyerhub.com/img/buyerhub-icon.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="My Orders | BuyerHub">
+  <meta name="twitter:description"
+    content="View and manage all your BuyerHub orders. Track shipments, leave reviews, and reorder favorites.">
+  <meta name="twitter:image" content="https://www.buyerhub.com/img/buyerhub-icon.svg">
+  <!-- /SEO meta -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
   <link href="css/custom.css" rel="stylesheet">
+  <!-- BH.Auth.requireAuth: zero-flash auth gate (P0-A2). Runs before <body> parses. -->
+  <script>(function () { try { var d = JSON.parse(localStorage.getItem('BuyerHub-auth') || '{}'); if (!d || !d.user || !d.token) { var p = location.pathname.split('/').pop() || 'index.html'; location.replace('login.html?redirect=' + encodeURIComponent(p + location.search)); } } catch (e) { } })();</script>
 </head>
+
 <body>
   <div id="bh-header"></div>
   <div id="bh-secondary-nav"></div>
   <main class="bh-page py-4 py-lg-6">
-    <div class="container-xl px-3 px-lg-4">
-      <nav class="mb-3"><ol class="breadcrumb bh-breadcrumb"><li class="breadcrumb-item"><a href="index.html">Home</a></li><li class="breadcrumb-item active">My Orders</li></ol></nav>
+    <div class="bh-container px-3 px-lg-4">
+      <nav class="mb-3">
+        <ol class="breadcrumb bh-breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item active">My Orders</li>
+        </ol>
+      </nav>
       <h1 class="bh-page-title mb-4">My Orders</h1>
+      <div id="successBanner" class="bh-card p-4 mb-4" style="background-color:#f0fdf4;border-color:#bbf7d0" hidden>
+      </div>
       <div id="ordersList"></div>
     </div>
   </main>
@@ -23,51 +52,77 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/api.js"></script>
   <script src="js/components.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       BH.initPage({ page: 'orders' });
-      var orders = BH.orders || [];
       var list = document.getElementById('ordersList');
-      if (orders.length === 0) {
-        list.innerHTML = '<div class="bh-card text-center p-8"><i class="bi bi-box fs-1 text-muted d-block mb-3"></i><h3 class="fw-medium mb-2">No orders yet</h3><p class="text-muted mb-4">When you place your first order, it will appear here.</p><a href="products.html" class="btn btn-bh-primary">Start Shopping</a></div>';
-        return;
+      var banner = document.getElementById('successBanner');
+      list.innerHTML = '<div class="text-center py-12"><div class="spinner-border text-primary" role="status"></div></div>';
+
+      var urlParams = new URLSearchParams(window.location.search);
+      var placedOrderId = urlParams.get('placed');
+      if (placedOrderId && banner) {
+        banner.innerHTML = '<div class="d-flex align-items-center gap-3"><i class="bi bi-check-circle-fill text-success fs-4"></i><div><h5 class="fw-semibold mb-1 text-success">Order Placed Successfully!</h5><p class="text-sm text-muted mb-0">Your order #' + placedOrderId + ' has been confirmed. You will receive an email confirmation shortly.</p></div></div>';
+        banner.hidden = false;
+        setTimeout(function () {
+          banner.hidden = true;
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }, 5000);
       }
+
       function statusIcon(s) {
-        if (s==='delivered') return '<i class="bi bi-check-circle-fill text-success"></i>';
-        if (s==='shipped') return '<i class="bi bi-truck text-primary"></i>';
-        if (s==='processing') return '<i class="bi bi-box text-warning"></i>';
+        if (s === 'delivered') return '<i class="bi bi-check-circle-fill text-success"></i>';
+        if (s === 'shipped') return '<i class="bi bi-truck text-primary"></i>';
+        if (s === 'processing') return '<i class="bi bi-box text-warning"></i>';
         return '<i class="bi bi-clock text-muted"></i>';
       }
       function statusBadge(s) {
-        var cls = s==='delivered'?'bg-success':s==='shipped'?'bg-primary':s==='processing'?'bg-warning':'bg-secondary';
-        return '<span class="badge '+cls+'">'+s.charAt(0).toUpperCase()+s.slice(1)+'</span>';
+        var cls = s === 'delivered' ? 'bg-success' : s === 'shipped' ? 'bg-primary' : s === 'processing' ? 'bg-warning' : 'bg-secondary';
+        return '<span class="badge ' + cls + '">' + s.charAt(0).toUpperCase() + s.slice(1) + '</span>';
       }
-      list.innerHTML = orders.map(function(order) {
-        return '<div class="bh-card p-4 mb-3">\
-          <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between mb-3">\
-            <div><h5 class="fw-semibold mb-1">Order #'+order.id+'</h5><p class="text-sm text-muted mb-0">Placed on '+new Date(order.createdAt).toLocaleDateString()+'</p></div>\
-            <div class="d-flex align-items-center gap-2 mt-2 mt-sm-0">'+statusIcon(order.status)+' '+statusBadge(order.status)+'</div>\
-          </div>\
-          <div class="space-y-2 mb-3">' +
-            order.items.map(function(item) {
-              var p = item.product;
-              var price = typeof p.price==='number'?p.price:(p.price&&p.price.current)||0;
-              var img = Array.isArray(p.images)?p.images[0]:(p.images&&p.images.main)||'';
-              return '<div class="d-flex align-items-center gap-3"><div style="width:56px;height:56px" class="flex-shrink-0 rounded overflow-hidden" style="background:hsl(var(--muted))"><img src="'+img+'" class="w-100 h-100" style="object-fit:contain"></div><div class="flex-grow-1 min-w-0"><p class="fw-medium text-sm mb-0 text-truncate">'+p.name+'</p><p class="text-sm text-muted mb-0">Qty: '+item.quantity+'</p></div><div class="fw-medium text-sm">'+BH.formatPrice(price)+'</div></div>';
-            }).join('') + '\
-          </div>\
-          <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between pt-3 border-top">\
-            <div class="fs-5 fw-semibold mb-2 mb-sm-0">Total: '+BH.formatPrice(order.total)+'</div>\
-            <div class="d-flex gap-2 flex-wrap">\
-              <a href="order-detail.html?id='+order.id+'" class="btn btn-sm btn-outline-secondary">View Details</a>' +
-              (order.status==='delivered'?'<a href="rate-order.html?id='+order.id+'" class="btn btn-sm btn-bh-primary"><i class="bi bi-star me-1"></i>Rate Order</a>':'') + '\
-              <a href="track-order.html?id='+order.id+'" class="btn btn-sm btn-outline-secondary">Track Order</a>\
+
+      BH.api.orders.listOrders().then(function (res) {
+        if (res.error) {
+          list.innerHTML = '<div class="bh-card text-center p-8"><p class="text-danger">Error loading orders: ' + (res.message || 'Unknown error') + '</p></div>';
+          return;
+        }
+        var orders = res.data || [];
+        if (orders.length === 0) {
+          list.innerHTML = '<div class="bh-card text-center p-8"><i class="bi bi-box fs-1 text-muted d-block mb-3"></i><h3 class="fw-medium mb-2">No orders yet</h3><p class="text-muted mb-4">When you place your first order, it will appear here.</p><a href="products.html" class="btn btn-bh-primary">Start Shopping</a></div>';
+          return;
+        }
+        list.innerHTML = orders.map(function (order) {
+          return '<div class="bh-card p-4 mb-3">\
+            <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between mb-3">\
+              <div><h5 class="fw-semibold mb-1">Order #'+ order.id + '</h5><p class="text-sm text-muted mb-0">Placed on ' + new Date(order.createdAt).toLocaleDateString() + '</p></div>\
+              <div class="d-flex align-items-center gap-2 mt-2 mt-sm-0">'+ statusIcon(order.status) + ' ' + statusBadge(order.status) + '</div>\
             </div>\
-          </div>\
-        </div>';
-      }).join('');
+            <div class="space-y-2 mb-3">' +
+            order.items.map(function (item) {
+              var p = item.product;
+              var price = typeof p.price === 'number' ? p.price : (p.price && p.price.current) || 0;
+              var img = Array.isArray(p.images) ? p.images[0] : (p.images && p.images.main) || '';
+              return '<div class="d-flex align-items-center gap-3"><div style="width:56px;height:56px" class="flex-shrink-0 rounded overflow-hidden" style="background:hsl(var(--muted))"><img src="' + img + '" class="w-100 h-100" style="object-fit:contain"></div><div class="flex-grow-1 min-w-0"><p class="fw-medium text-sm mb-0 text-truncate">' + p.name + '</p><p class="text-sm text-muted mb-0">Qty: ' + item.quantity + '</p></div><div class="fw-medium text-sm">' + BH.formatPrice(price) + '</div></div>';
+            }).join('') + '\
+            </div>\
+            <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between pt-3 border-top">\
+              <div class="fs-5 fw-semibold mb-2 mb-sm-0">Total: '+ BH.formatPrice(order.total) + '</div>\
+              <div class="d-flex gap-2 flex-wrap">\
+                <a href="order-detail.html?id='+ order.id + '" class="btn btn-sm btn-outline-secondary">View Details</a>' +
+            (order.status === 'delivered' ? '<a href="rate-order.html?id=' + order.id + '" class="btn btn-sm btn-bh-primary"><i class="bi bi-star me-1"></i>Rate Order</a>' : '') + '\
+                <a href="track-order.html?id='+ order.id + '" class="btn btn-sm btn-outline-secondary">Track Order</a>\
+              </div>\
+            </div>\
+          </div>';
+        }).join('');
+      }).catch(function (err) {
+        console.error('Failed to load orders:', err);
+        list.innerHTML = '<div class="bh-card text-center p-8"><p class="text-danger">Error loading orders. Please try again later.</p></div>';
+      });
     });
   </script>
 </body>
+
 </html>

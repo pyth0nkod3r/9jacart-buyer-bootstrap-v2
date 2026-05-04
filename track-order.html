@@ -1,19 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Track Order | BuyerHub</title>
+  <!-- SEO meta (P0-A5) -->
+  <meta name="description"
+    content="Track your BuyerHub order in real time. View status updates, carrier info, and estimated delivery.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="BuyerHub">
+  <meta property="og:title" content="Track Order | BuyerHub">
+  <meta property="og:description"
+    content="Track your BuyerHub order in real time. View status updates, carrier info, and estimated delivery.">
+  <meta property="og:url" content="https://www.buyerhub.com/track-order.html">
+  <meta property="og:image" content="https://www.buyerhub.com/img/buyerhub-icon.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Track Order | BuyerHub">
+  <meta name="twitter:description"
+    content="Track your BuyerHub order in real time. View status updates, carrier info, and estimated delivery.">
+  <meta name="twitter:image" content="https://www.buyerhub.com/img/buyerhub-icon.svg">
+  <!-- /SEO meta -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
   <link href="css/custom.css" rel="stylesheet">
+  <!-- BH.Auth.requireAuth: zero-flash auth gate (P0-A2). Runs before <body> parses. -->
+  <script>(function () { try { var d = JSON.parse(localStorage.getItem('BuyerHub-auth') || '{}'); if (!d || !d.user || !d.token) { var p = location.pathname.split('/').pop() || 'index.html'; location.replace('login.html?redirect=' + encodeURIComponent(p + location.search)); } } catch (e) { } })();</script>
 </head>
+
 <body>
   <div id="bh-header"></div>
   <main class="bh-page py-4 py-lg-6">
-    <div class="container-xl px-3 px-lg-4">
-      <nav class="mb-3"><ol class="breadcrumb bh-breadcrumb"><li class="breadcrumb-item"><a href="index.html">Home</a></li><li class="breadcrumb-item active">Track Order</li></ol></nav>
+    <div class="bh-container px-3 px-lg-4">
+      <nav class="mb-3">
+        <ol class="breadcrumb bh-breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item active">Track Order</li>
+        </ol>
+      </nav>
       <h1 class="bh-page-title mb-4">Track Your Order</h1>
       <div class="bh-card p-4 mb-4">
         <div class="d-flex gap-2 mb-3">
@@ -28,9 +55,10 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/api.js"></script>
   <script src="js/components.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       BH.initPage();
       var params = new URLSearchParams(window.location.search);
       var id = params.get('id');
@@ -41,20 +69,36 @@
     });
     function trackOrder() {
       var id = document.getElementById('orderInput').value.trim();
-      var order = (BH.orders||[]).find(function(o){return o.id===id});
       var result = document.getElementById('trackResult');
-      if (!order) { result.innerHTML = '<div class="bh-card text-center p-6"><p class="text-muted">No order found with that ID.</p></div>'; return; }
-      var steps = [
-        { label: 'Order Placed', done: true, icon: 'bi-check-circle', date: new Date(order.createdAt).toLocaleDateString() },
-        { label: 'Processing', done: order.status !== 'pending', icon: 'bi-gear', date: order.status !== 'pending' ? new Date(order.createdAt).toLocaleDateString() : '' },
-        { label: 'Shipped', done: order.status === 'shipped' || order.status === 'delivered', icon: 'bi-truck', date: '' },
-        { label: 'Delivered', done: order.status === 'delivered', icon: 'bi-check-circle', date: order.status === 'delivered' ? new Date().toLocaleDateString() : '' },
-      ];
-      result.innerHTML = '<div class="bh-card p-4"><h5 class="fw-bold mb-1">Order #'+order.id+'</h5><p class="text-sm text-muted mb-4">Status: <span class="badge '+(order.status==='delivered'?'bg-success':order.status==='shipped'?'bg-primary':'bg-warning')+'">'+order.status.charAt(0).toUpperCase()+order.status.slice(1)+'</span></p>' +
-        steps.map(function(step, i) {
-          return '<div class="d-flex gap-3 mb-3"><div class="flex-shrink-0 text-center"><div class="rounded-circle d-flex align-items-center justify-content-center '+(step.done?'':'opacity-50')+'" style="width:40px;height:40px;background:'+(step.done?'hsl(var(--success))':'hsl(var(--muted))')+';color:white"><i class="bi '+step.icon+'"></i></div></div><div class="flex-grow-1"><p class="fw-medium mb-0">'+step.label+'</p>'+(step.date?'<p class="text-xs text-muted mb-0">'+step.date+'</p>':'')+'</div>'+(i<steps.length-1?'<div class="flex-grow-1 border-start ms-2" style="min-height:20px"></div>':'')+'</div>';
-        }).join('') + '</div>';
+      if (!id) { result.innerHTML = '<div class="bh-card text-center p-6"><p class="text-muted">Please enter an Order ID.</p></div>'; return; }
+      result.innerHTML = '<div class="text-center py-12"><div class="spinner-border text-primary" role="status"></div></div>';
+
+      BH.api.orders.getOrder(id).then(function (res) {
+        if (res.error) {
+          result.innerHTML = '<div class="bh-card text-center p-6"><p class="text-danger">Error loading order: ' + (res.message || 'Unknown error') + '</p></div>';
+          return;
+        }
+        var order = res.data;
+        if (!order) {
+          result.innerHTML = '<div class="bh-card text-center p-6"><p class="text-muted">No order found with that ID.</p></div>';
+          return;
+        }
+        var steps = [
+          { label: 'Order Placed', done: true, icon: 'bi-check-circle', date: new Date(order.createdAt).toLocaleDateString() },
+          { label: 'Processing', done: order.status !== 'pending', icon: 'bi-gear', date: order.status !== 'pending' ? new Date(order.createdAt).toLocaleDateString() : '' },
+          { label: 'Shipped', done: order.status === 'shipped' || order.status === 'delivered', icon: 'bi-truck', date: '' },
+          { label: 'Delivered', done: order.status === 'delivered', icon: 'bi-check-circle', date: order.status === 'delivered' ? new Date().toLocaleDateString() : '' },
+        ];
+        result.innerHTML = '<div class="bh-card p-4"><h5 class="fw-bold mb-1">Order #' + (order.orderId || order.orderNumber || order.orderNo || order.id) + '</h5><p class="text-sm text-muted mb-4">Status: <span class="badge ' + (order.status === 'delivered' ? 'bg-success' : order.status === 'shipped' ? 'bg-primary' : 'bg-warning') + '">' + (order.status || '').charAt(0).toUpperCase() + (order.status || '').slice(1) + '</span></p>' +
+          steps.map(function (step, i) {
+            return '<div class="d-flex gap-3 mb-3"><div class="flex-shrink-0 text-center"><div class="rounded-circle d-flex align-items-center justify-content-center ' + (step.done ? '' : 'opacity-50') + '" style="width:40px;height:40px;background:' + (step.done ? 'hsl(var(--success))' : 'hsl(var(--muted))') + ';color:white"><i class="bi ' + step.icon + '"></i></div></div><div class="flex-grow-1"><p class="fw-medium mb-0">' + step.label + '</p>' + (step.date ? '<p class="text-xs text-muted mb-0">' + step.date + '</p>' : '') + '</div>' + (i < steps.length - 1 ? '<div class="flex-grow-1 border-start ms-2" style="min-height:20px"></div>' : '') + '</div>';
+          }).join('') + '</div>';
+      }).catch(function (err) {
+        console.error('Failed to load order:', err);
+        result.innerHTML = '<div class="bh-card text-center p-6"><p class="text-danger">Error loading order. Please try again later.</p></div>';
+      });
     }
   </script>
 </body>
+
 </html>

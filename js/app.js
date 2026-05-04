@@ -4,7 +4,7 @@
  * Matching useCartStore.ts, useWishlistStore.ts, useAuthStore.ts
  */
 
-(function() {
+(function () {
   'use strict';
   const BH = window.BH || {};
 
@@ -15,46 +15,115 @@
   const STORAGE_PREFIX = 'BuyerHub';
 
   // ========== UTILITY FUNCTIONS ==========
-  BH.formatPrice = function(amount) {
+  BH.formatPrice = function (amount) {
     if (amount == null) return '₦0';
     return '₦' + Number(amount).toLocaleString('en-NG');
   };
 
-  BH.formatDiscount = function(percentage) {
+  BH.formatDiscount = function (percentage) {
     if (!percentage || percentage <= 0) return '';
     return '-' + Math.round(percentage) + '%';
   };
 
-  BH.truncateText = function(text, wordCount) {
+  BH.truncateText = function (text, wordCount) {
     if (!text) return '';
     var words = text.trim().split(/\s+/);
     if (words.length <= wordCount) return text;
     return words.slice(0, wordCount).join(' ') + '...';
   };
 
-  BH.showToast = function(message, type) {
-    type = type || 'success';
+  /**
+   * Show a toast notification. Mirrors React's NotificationProvider /
+   * useNotification / <Toast> behavior (src/hooks/useNotification.ts,
+   * src/components/UI/Toast.tsx).
+   *
+   * Signature: BH.showToast(message, variant, durationMs)
+   *   - variant:   'info' | 'success' | 'warning' | 'error'  (default: 'success')
+   *                NOTE: React defaults to 'info' but every existing call site
+   *                in this codebase intends a success message, so we keep
+   *                'success' as the default to preserve back-compat.
+   *   - durationMs: number; 0 = sticky (must be closed manually). Default 3000.
+   *
+   * Returns a `dismiss` function so callers can close the toast programmatically.
+   */
+  BH.showToast = function (message, variant, durationMs) {
+    var allowed = { info: 1, success: 1, warning: 1, error: 1 };
+    variant = (variant && allowed[variant]) ? variant : 'success';
+    if (typeof durationMs !== 'number') durationMs = 3000;
+
+    // Lazy-create the stacking container (matches React <ToastContainer>).
+    var container = document.getElementById('bh-toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'bh-toast-container';
+      container.className = 'bh-toast-container';
+      container.setAttribute('role', 'region');
+      container.setAttribute('aria-label', 'Notifications');
+      document.body.appendChild(container);
+    }
+
+    // Bootstrap-icons equivalents of the lucide icons used in React Toast.tsx.
+    var iconMap = {
+      info: 'bi-info-circle-fill',
+      success: 'bi-check-circle-fill',
+      warning: 'bi-exclamation-triangle-fill',
+      error: 'bi-exclamation-circle-fill'
+    };
+
     var toast = document.createElement('div');
-    toast.className = 'bh-toast bh-toast-' + type;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    setTimeout(function() { toast.classList.add('show'); }, 10);
-    setTimeout(function() {
+    toast.className = 'bh-toast bh-toast-' + variant;
+    toast.setAttribute('role', variant === 'error' ? 'alert' : 'status');
+    toast.setAttribute('aria-live', variant === 'error' ? 'assertive' : 'polite');
+
+    var icon = document.createElement('i');
+    icon.className = 'bi ' + iconMap[variant] + ' bh-toast-icon';
+    icon.setAttribute('aria-hidden', 'true');
+
+    var msg = document.createElement('p');
+    msg.className = 'bh-toast-message';
+    msg.textContent = message == null ? '' : String(message);
+
+    var closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'bh-toast-close';
+    closeBtn.setAttribute('aria-label', 'Close notification');
+    closeBtn.innerHTML = '<i class="bi bi-x" aria-hidden="true"></i>';
+
+    var dismissed = false;
+    var autoTimer = null;
+    function dismiss() {
+      if (dismissed) return;
+      dismissed = true;
+      if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
       toast.classList.remove('show');
-      setTimeout(function() { toast.remove(); }, 300);
-    }, 3000);
+      setTimeout(function () {
+        if (toast.parentNode) toast.parentNode.removeChild(toast);
+      }, 300);
+    }
+    closeBtn.addEventListener('click', dismiss);
+
+    toast.appendChild(icon);
+    toast.appendChild(msg);
+    toast.appendChild(closeBtn);
+    container.appendChild(toast);
+
+    // Trigger transition on next frame.
+    setTimeout(function () { toast.classList.add('show'); }, 10);
+    if (durationMs > 0) autoTimer = setTimeout(dismiss, durationMs);
+
+    return dismiss;
   };
 
-  BH.debounce = function(fn, delay) {
+  BH.debounce = function (fn, delay) {
     var timer;
-    return function() {
+    return function () {
       var context = this, args = arguments;
       clearTimeout(timer);
-      timer = setTimeout(function() { fn.apply(context, args); }, delay);
+      timer = setTimeout(function () { fn.apply(context, args); }, delay);
     };
   };
 
-  BH.getUrlParam = function(name) {
+  BH.getUrlParam = function (name) {
     var params = new URLSearchParams(window.location.search);
     return params.get(name);
   };
@@ -168,11 +237,11 @@
 
   BH.Theme = {
     current: 'default',
-    init: function() {
+    init: function () {
       var saved = localStorage.getItem(STORAGE_PREFIX + '-theme') || 'default';
       this.set(saved);
     },
-    set: function(name) {
+    set: function (name) {
       if (!themeColors[name]) name = 'default';
       this.current = name;
       var root = document.documentElement;
@@ -186,13 +255,13 @@
       }
       localStorage.setItem(STORAGE_PREFIX + '-theme', name);
       // Update theme dropdown active state when theme changes
-      document.querySelectorAll('[data-theme-option]').forEach(function(btn) {
+      document.querySelectorAll('[data-theme-option]').forEach(function (btn) {
         btn.classList.toggle('active', btn.getAttribute('data-theme-option') === name);
       });
       // Dispatch event for component updates
       document.dispatchEvent(new CustomEvent('bh:themechange', { detail: { theme: name } }));
     },
-    getMeta: function(name) { return themeMeta[name] || themeMeta.default; },
+    getMeta: function (name) { return themeMeta[name] || themeMeta.default; },
   };
 
   // ========== CART STORE ==========
@@ -200,22 +269,22 @@
     _items: [],
     _key: STORAGE_PREFIX + '-cart',
 
-    init: function() {
+    init: function () {
       try {
         var saved = localStorage.getItem(this._key);
         if (saved) this._items = JSON.parse(saved);
-      } catch(e) { this._items = []; }
+      } catch (e) { this._items = []; }
       this._render();
     },
 
-    _save: function() {
+    _save: function () {
       localStorage.setItem(this._key, JSON.stringify(this._items));
       this._render();
     },
 
-    addItem: function(product, quantity) {
+    addItem: function (product, quantity) {
       quantity = quantity || 1;
-      var existing = this._items.find(function(i) { return i.product.id === product.id; });
+      var existing = this._items.find(function (i) { return i.product.id === product.id; });
       if (existing) {
         existing.quantity += quantity;
       } else {
@@ -225,55 +294,55 @@
       BH.showToast('Added to cart!');
     },
 
-    removeItem: function(productId) {
-      this._items = this._items.filter(function(i) { return i.product.id !== productId; });
+    removeItem: function (productId) {
+      this._items = this._items.filter(function (i) { return i.product.id !== productId; });
       this._save();
     },
 
-    updateQuantity: function(productId, quantity) {
+    updateQuantity: function (productId, quantity) {
       if (quantity <= 0) { this.removeItem(productId); return; }
-      var item = this._items.find(function(i) { return i.product.id === productId; });
+      var item = this._items.find(function (i) { return i.product.id === productId; });
       if (item) { item.quantity = quantity; this._save(); }
     },
 
-    clearCart: function() { this._items = []; this._save(); },
+    clearCart: function () { this._items = []; this._save(); },
 
-    getItems: function() { return this._items; },
+    getItems: function () { return this._items; },
 
-    getTotalItems: function() {
-      return this._items.reduce(function(sum, i) { return sum + i.quantity; }, 0);
+    getTotalItems: function () {
+      return this._items.reduce(function (sum, i) { return sum + i.quantity; }, 0);
     },
 
-    getSubtotal: function() {
-      return this._items.reduce(function(sum, i) {
+    getSubtotal: function () {
+      return this._items.reduce(function (sum, i) {
         var price = typeof i.product.price === 'number' ? i.product.price : (i.product.price && i.product.price.current) || 0;
         return sum + (price * i.quantity);
       }, 0);
     },
 
-    getShipping: function() {
+    getShipping: function () {
       var sub = this.getSubtotal();
       return sub > FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
     },
 
-    getFlatRate: function() { return FLAT_RATE_NGN; },
+    getFlatRate: function () { return FLAT_RATE_NGN; },
 
-    getFinalTotal: function() {
+    getFinalTotal: function () {
       return this.getSubtotal() + this.getShipping() + FLAT_RATE_NGN;
     },
 
-    isItemInCart: function(productId) {
-      return this._items.some(function(i) { return i.product.id === productId; });
+    isItemInCart: function (productId) {
+      return this._items.some(function (i) { return i.product.id === productId; });
     },
 
-    getItemQuantity: function(productId) {
-      var item = this._items.find(function(i) { return i.product.id === productId; });
+    getItemQuantity: function (productId) {
+      var item = this._items.find(function (i) { return i.product.id === productId; });
       return item ? item.quantity : 0;
     },
 
-    _render: function() {
+    _render: function () {
       // Update cart badge count
-      document.querySelectorAll('[data-cart-count]').forEach(function(el) {
+      document.querySelectorAll('[data-cart-count]').forEach(function (el) {
         var count = BH.Cart.getTotalItems();
         el.textContent = count > 99 ? '99+' : count;
         el.style.display = count > 0 ? 'flex' : 'none';
@@ -288,44 +357,44 @@
     _items: [],
     _key: STORAGE_PREFIX + '-wishlist',
 
-    init: function() {
+    init: function () {
       try {
         var saved = localStorage.getItem(this._key);
         if (saved) this._items = JSON.parse(saved);
-      } catch(e) { this._items = []; }
+      } catch (e) { this._items = []; }
       this._render();
     },
 
-    _save: function() {
+    _save: function () {
       localStorage.setItem(this._key, JSON.stringify(this._items));
       this._render();
     },
 
-    addItem: function(product) {
+    addItem: function (product) {
       if (this.isItemInWishlist(product.id)) return;
       this._items.push({ id: product.id, product: product, addedAt: new Date().toISOString() });
       this._save();
       BH.showToast('Added to wishlist!');
     },
 
-    removeItem: function(productId) {
-      this._items = this._items.filter(function(i) { return i.product.id !== productId; });
+    removeItem: function (productId) {
+      this._items = this._items.filter(function (i) { return i.product.id !== productId; });
       this._save();
     },
 
-    clearWishlist: function() { this._items = []; this._save(); },
+    clearWishlist: function () { this._items = []; this._save(); },
 
-    isItemInWishlist: function(productId) {
-      return this._items.some(function(i) { return i.product.id === productId; });
+    isItemInWishlist: function (productId) {
+      return this._items.some(function (i) { return i.product.id === productId; });
     },
 
-    getTotalItems: function() { return this._items.length; },
+    getTotalItems: function () { return this._items.length; },
 
-    getItemById: function(productId) {
-      return this._items.find(function(i) { return i.product.id === productId; });
+    getItemById: function (productId) {
+      return this._items.find(function (i) { return i.product.id === productId; });
     },
 
-    moveToCart: function(productId) {
+    moveToCart: function (productId) {
       var item = this.getItemById(productId);
       if (item) {
         BH.Cart.addItem(item.product, 1);
@@ -334,8 +403,8 @@
       }
     },
 
-    _render: function() {
-      document.querySelectorAll('[data-wishlist-count]').forEach(function(el) {
+    _render: function () {
+      document.querySelectorAll('[data-wishlist-count]').forEach(function (el) {
         var count = BH.Wishlist.getTotalItems();
         el.textContent = count;
         el.style.display = count > 0 ? 'inline' : 'none';
@@ -351,7 +420,7 @@
     _isAuthenticated: false,
     _key: STORAGE_PREFIX + '-auth',
 
-    init: function() {
+    init: function () {
       try {
         var saved = localStorage.getItem(this._key);
         if (saved) {
@@ -360,18 +429,18 @@
           this._token = data.token;
           this._isAuthenticated = !!data.user && !!data.token;
         }
-      } catch(e) {}
+      } catch (e) { }
       this._render();
     },
 
-    _save: function() {
+    _save: function () {
       localStorage.setItem(this._key, JSON.stringify({
         user: this._user, token: this._token
       }));
       this._render();
     },
 
-    login: function(email, password) {
+    login: function (email, password) {
       // Mock login - use mockUser data
       this._user = BH.mockUser;
       this._token = 'mock-jwt-token-' + Date.now();
@@ -381,7 +450,7 @@
       return true;
     },
 
-    register: function(data) {
+    register: function (data) {
       this._user = { id: Date.now().toString(), email: data.email, firstName: data.firstName, lastName: data.lastName };
       this._token = 'mock-jwt-token-' + Date.now();
       this._isAuthenticated = true;
@@ -390,7 +459,7 @@
       return true;
     },
 
-    logout: function() {
+    logout: function () {
       this._user = null;
       this._token = null;
       this._isAuthenticated = false;
@@ -400,11 +469,11 @@
       BH.showToast('Signed out');
     },
 
-    getUser: function() { return this._user; },
-    getToken: function() { return this._token; },
-    isAuthenticated: function() { return this._isAuthenticated; },
+    getUser: function () { return this._user; },
+    getToken: function () { return this._token; },
+    isAuthenticated: function () { return this._isAuthenticated; },
 
-    updateUser: function(data) {
+    updateUser: function (data) {
       if (this._user) {
         for (var key in data) {
           if (data.hasOwnProperty(key)) this._user[key] = data[key];
@@ -413,24 +482,50 @@
       }
     },
 
-    _render: function() {
-      document.querySelectorAll('[data-auth-area]').forEach(function(el) {
+    /**
+     * Programmatic auth guard. Mirrors React's ProtectedRoute behavior.
+     * If the user is not signed in, redirects to login.html with a
+     * `redirect=` query param pointing back to the current page so the
+     * login flow can return them after success.
+     *
+     * Returns true if authenticated (so callers can `if (!BH.Auth.requireAuth()) return;`).
+     *
+     * NOTE: For zero-flash protection, prefer the inline <head> guard that
+     * runs before body content renders. This method exists for in-page
+     * actions that need to require auth on demand (e.g., wishlist add).
+     *
+     * @param {{ loginUrl?: string }} [opts]
+     * @returns {boolean}
+     */
+    requireAuth: function (opts) {
+      opts = opts || {};
+      if (this.isAuthenticated()) return true;
+      var path = window.location.pathname.split('/').pop() || 'index.html';
+      var search = window.location.search || '';
+      var redirect = encodeURIComponent(path + search);
+      var loginUrl = (opts.loginUrl || 'login.html') + '?redirect=' + redirect;
+      window.location.replace(loginUrl);
+      return false;
+    },
+
+    _render: function () {
+      document.querySelectorAll('[data-auth-area]').forEach(function (el) {
         var loggedIn = el.getAttribute('data-auth-area') === 'logged-in';
         el.style.display = BH.Auth.isAuthenticated() === loggedIn ? '' : 'none';
       });
-      document.querySelectorAll('[data-auth-guest]').forEach(function(el) {
+      document.querySelectorAll('[data-auth-guest]').forEach(function (el) {
         var guest = el.getAttribute('data-auth-guest') === 'guest';
         el.style.display = BH.Auth.isAuthenticated() === guest ? 'none' : '';
       });
-      document.querySelectorAll('[data-user-name]').forEach(function(el) {
+      document.querySelectorAll('[data-user-name]').forEach(function (el) {
         var user = BH.Auth.getUser();
         if (user) el.textContent = user.firstName + ' ' + user.lastName;
       });
-      document.querySelectorAll('[data-user-first]').forEach(function(el) {
+      document.querySelectorAll('[data-user-first]').forEach(function (el) {
         var user = BH.Auth.getUser();
         if (user) el.textContent = user.firstName;
       });
-      document.querySelectorAll('[data-user-email]').forEach(function(el) {
+      document.querySelectorAll('[data-user-email]').forEach(function (el) {
         var user = BH.Auth.getUser();
         if (user) el.textContent = user.email;
       });
@@ -439,7 +534,7 @@
   };
 
   // ========== INIT ==========
-  BH.init = function() {
+  BH.init = function () {
     BH.Theme.init();
     BH.Cart.init();
     BH.Wishlist.init();
@@ -457,21 +552,21 @@
 
   /* ========== PAGE: Reset Password ========== */
   BH.Page = BH.Page || {};
-  BH.Page.initResetPassword = function() {
+  BH.Page.initResetPassword = function () {
     var otpInputs = Array.from(document.querySelectorAll('.bh-otp-input'));
     if (!otpInputs.length && !document.getElementById('resetForm')) return;
-    otpInputs.forEach(function(el, index) {
-      el.addEventListener('input', function() {
+    otpInputs.forEach(function (el, index) {
+      el.addEventListener('input', function () {
         el.value = el.value.replace(/\D/g, '').slice(-1);
         if (el.value && index < otpInputs.length - 1) otpInputs[index + 1].focus();
       });
-      el.addEventListener('keydown', function(e) {
+      el.addEventListener('keydown', function (e) {
         if (e.key === 'Backspace' && !e.target.value && index > 0) otpInputs[index - 1].focus();
       });
     });
 
-    document.querySelectorAll('.bh-toggle-pwd').forEach(function(btn) {
-      btn.addEventListener('click', function() {
+    document.querySelectorAll('.bh-toggle-pwd').forEach(function (btn) {
+      btn.addEventListener('click', function () {
         var input = btn.parentElement.querySelector('input');
         if (!input) return;
         input.type = input.type === 'password' ? 'text' : 'password';
@@ -481,9 +576,9 @@
 
     var resetForm = document.getElementById('resetForm');
     if (resetForm) {
-      resetForm.addEventListener('submit', function(e) {
+      resetForm.addEventListener('submit', function (e) {
         e.preventDefault();
-        var code = otpInputs.map(function(i) { return i.value; }).join('');
+        var code = otpInputs.map(function (i) { return i.value; }).join('');
         var pwd = document.getElementById('newPwd').value;
         var cpwd = document.getElementById('confirmPwd').value;
         var errEl = document.getElementById('errorAlert');
@@ -493,12 +588,12 @@
         if (pwd !== cpwd) { if (errEl) { errEl.textContent = 'Passwords do not match.'; errEl.classList.remove('d-none'); } return; }
         var btn = document.getElementById('resetBtn');
         if (btn) { btn.disabled = true; btn.textContent = 'Resetting...'; }
-        setTimeout(function() {
+        setTimeout(function () {
           var success = document.getElementById('successAlert');
           if (success) success.classList.remove('d-none');
           if (resetForm) resetForm.style.display = 'none';
           if (window.BH && typeof BH.showToast === 'function') BH.showToast('Password reset successfully!');
-          setTimeout(function() { window.location.href = 'login.html'; }, 2000);
+          setTimeout(function () { window.location.href = 'login.html'; }, 2000);
         }, 1000);
       });
     }

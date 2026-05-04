@@ -1,22 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BuyerHub - Your One-Stop Online Shopping Destination</title>
-  <meta name="description" content="Shop top deals on electronics, fashion, home appliances & more at BuyerHub. Fast delivery, secure checkout & great prices. Start shopping today!">
+  <!-- SEO meta (P0-A5) -->
+  <meta name="description"
+    content="Shop top deals on electronics, fashion, home appliances &amp; more at BuyerHub. Fast delivery, secure checkout &amp; great prices. Start shopping today!">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="BuyerHub">
+  <meta property="og:title" content="BuyerHub - Your One-Stop Online Shopping Destination">
+  <meta property="og:description"
+    content="Shop top deals on electronics, fashion, home appliances &amp; more at BuyerHub. Fast delivery, secure checkout &amp; great prices. Start shopping today!">
+  <meta property="og:url" content="https://www.buyerhub.com/">
+  <meta property="og:image" content="https://www.buyerhub.com/img/buyerhub-icon.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="BuyerHub - Your One-Stop Online Shopping Destination">
+  <meta name="twitter:description"
+    content="Shop top deals on electronics, fashion, home appliances &amp; more at BuyerHub. Fast delivery, secure checkout &amp; great prices. Start shopping today!">
+  <meta name="twitter:image" content="https://www.buyerhub.com/img/buyerhub-icon.svg">
+  <!-- /SEO meta -->
   <link rel="icon" type="image/svg+xml" href="img/buyerhub-icon.svg">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
   <link href="css/custom.css" rel="stylesheet">
 </head>
+
 <body>
   <div id="bh-header"></div>
   <div id="bh-secondary-nav"></div>
 
   <main class="bh-page">
-    <div class="container-xl px-3 px-lg-4 py-3 py-lg-6">
+    <div class="bh-container px-3 px-lg-4 py-3 py-lg-6">
       <!-- Hero Section -->
       <div class="row g-3 g-lg-4 align-items-start mb-4">
         <!-- Categories Sidebar (Desktop) -->
@@ -34,7 +53,7 @@
 
       <!-- Today's Deal (Flash Sales) -->
       <section class="py-4 py-lg-6" style="background:hsl(var(--muted))">
-        <div class="container-xl px-3 px-lg-4">
+        <div class="bh-container px-3 px-lg-4">
           <div class="d-flex align-items-center justify-content-between mb-4">
             <div class="bh-section-header">
               <h2>Today's Deal</h2>
@@ -50,7 +69,7 @@
 
       <!-- Shop by Category -->
       <section class="py-4 py-lg-6">
-        <div class="container-xl px-3 px-lg-4">
+        <div class="bh-container px-3 px-lg-4">
           <div class="d-flex align-items-center justify-content-between mb-4">
             <div class="bh-section-header">
               <h2>Shop by Category</h2>
@@ -63,7 +82,7 @@
 
       <!-- Featured Picks -->
       <section class="py-4 py-lg-6" style="background:hsl(var(--muted))">
-        <div class="container-xl px-3 px-lg-4">
+        <div class="bh-container px-3 px-lg-4">
           <div class="d-flex align-items-center justify-content-between mb-4">
             <div class="bh-section-header">
               <h2>Featured Picks</h2>
@@ -79,7 +98,7 @@
 
       <!-- All Products -->
       <section class="py-4 py-lg-6" style="background:hsl(var(--card))">
-        <div class="container-xl px-3 px-lg-4">
+        <div class="bh-container px-3 px-lg-4">
           <div class="d-flex align-items-center justify-content-between mb-4">
             <div class="bh-section-header">
               <h2>All Products</h2>
@@ -91,7 +110,8 @@
           </div>
           <div class="row g-3 g-lg-4" id="allProductsGrid"></div>
           <div class="text-center mt-4 d-sm-none">
-            <a href="products.html" class="btn btn-bh-outline d-flex align-items-center gap-2 mx-auto justify-content-center">
+            <a href="products.html"
+              class="btn btn-bh-outline d-flex align-items-center gap-2 mx-auto justify-content-center">
               View All Products <i class="bi bi-chevron-right"></i>
             </a>
           </div>
@@ -100,12 +120,14 @@
 
       <!-- Newsletter -->
       <section class="py-4 py-lg-6" style="background:hsl(var(--muted))">
-        <div class="container-xl px-3 px-lg-4">
+        <div class="bh-container px-3 px-lg-4">
           <div class="bh-card p-4 p-lg-6 text-center">
             <h3 class="fw-bold mb-2">Subscribe to our newsletter</h3>
             <p class="text-sm text-muted mb-3">Get the latest deals and updates delivered to your inbox.</p>
-            <form class="d-flex gap-2 justify-content-center" onsubmit="event.preventDefault();BH.showToast('Subscribed!')">
-              <input type="email" placeholder="Enter your email address" class="form-control bh-form-control" style="max-width:350px" required>
+            <form class="d-flex gap-2 justify-content-center"
+              onsubmit="event.preventDefault();BH.showToast('Subscribed!')">
+              <input type="email" placeholder="Enter your email address" class="form-control bh-form-control"
+                style="max-width:350px" required>
               <button type="submit" class="btn btn-bh-primary">Subscribe</button>
             </form>
           </div>
@@ -119,15 +141,16 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/api.js"></script>
   <script src="js/components.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       BH.initPage({ page: 'home' });
 
       // Hero categories sidebar
       var heroCats = document.getElementById('heroCategories');
       if (heroCats) {
-        heroCats.innerHTML = BH.mainCategories.slice(0, 8).map(function(cat) {
+        heroCats.innerHTML = BH.mainCategories.slice(0, 8).map(function (cat) {
           return '<a href="category.html?cat=' + cat.id + '&name=' + encodeURIComponent(cat.name) + '" class="d-block py-1 text-sm text-decoration-none" style="color:hsl(var(--foreground))">' + cat.name + '</a>';
         }).join('');
       }
@@ -156,25 +179,25 @@
             </div>
             <button type="button" class="bh-hero-control bh-hero-control-left" onclick="goPrev()" aria-label="Previous slide"><i class="bi bi-chevron-left"></i></button>
             <button type="button" class="bh-hero-control bh-hero-control-right" onclick="goNext()" aria-label="Next slide"><i class="bi bi-chevron-right"></i></button>
-            <div class="bh-hero-dot-container">${BH.heroSlides.map(function(s, i) {
-              return `<button class="bh-hero-dot ${i === idx ? 'active' : ''}" onclick="goSlide(${i})" aria-label="Go to slide ${i + 1}"></button>`;
-            }).join('')}</div>
+            <div class="bh-hero-dot-container">${BH.heroSlides.map(function (s, i) {
+            return `<button class="bh-hero-dot ${i === idx ? 'active' : ''}" onclick="goSlide(${i})" aria-label="Go to slide ${i + 1}"></button>`;
+          }).join('')}</div>
             <div class="bh-hero-counter">${idx + 1} / ${BH.heroSlides.length}</div>`;
         }
-        window.goSlide = function(i) { currentSlide = i; renderSlide(i); };
-        window.goPrev = function() { currentSlide = currentSlide === 0 ? BH.heroSlides.length - 1 : currentSlide - 1; renderSlide(currentSlide); };
-        window.goNext = function() { currentSlide = (currentSlide + 1) % BH.heroSlides.length; renderSlide(currentSlide); };
+        window.goSlide = function (i) { currentSlide = i; renderSlide(i); };
+        window.goPrev = function () { currentSlide = currentSlide === 0 ? BH.heroSlides.length - 1 : currentSlide - 1; renderSlide(currentSlide); };
+        window.goNext = function () { currentSlide = (currentSlide + 1) % BH.heroSlides.length; renderSlide(currentSlide); };
         renderSlide(0);
-        setInterval(function() { currentSlide = (currentSlide + 1) % BH.heroSlides.length; renderSlide(currentSlide); }, 5000);
+        setInterval(function () { currentSlide = (currentSlide + 1) % BH.heroSlides.length; renderSlide(currentSlide); }, 5000);
       }
 
       // Flash sale products (with discounts)
-      var flashProducts = BH.products.filter(function(p) {
+      var flashProducts = BH.products.filter(function (p) {
         return p.price && p.price.discount && p.price.discount.percentage > 0;
       });
       var flashGrid = document.getElementById('flashSaleGrid');
       if (flashGrid) {
-        flashGrid.innerHTML = flashProducts.map(function(p) {
+        flashGrid.innerHTML = flashProducts.map(function (p) {
           return '<div class="col-6 col-sm-6 col-md-3 col-lg-3">' + BH.renderProductCard(p) + '</div>';
         }).join('');
       }
@@ -183,17 +206,17 @@
       var catGrid = document.getElementById('categoryGrid');
       if (catGrid) {
         var catIcons = ['bi-lightning', 'bi-emoji-smile', 'bi-phone', 'bi-cart', 'bi-heart-pulse', 'bi-basket', 'bi-handbag'];
-        catGrid.innerHTML = BH.mainCategories.map(function(cat, i) {
+        catGrid.innerHTML = BH.mainCategories.map(function (cat, i) {
           return '<div class="col-4 col-sm-4 col-md-3 col-lg-2"><a href="category.html?cat=' + cat.id + '&name=' + encodeURIComponent(cat.name) + '" class="bh-cat-card"><i class="bi ' + (catIcons[i] || 'bi-box') + '"></i><span>' + cat.name + '</span></a></div>';
         }).join('');
       }
 
       // Featured Picks (bestsellers)
-      var featured = BH.products.filter(function(p) { return p.flags && p.flags.bestseller; }).slice(0, 4);
+      var featured = BH.products.filter(function (p) { return p.flags && p.flags.bestseller; }).slice(0, 4);
       if (featured.length < 4) featured = BH.products.slice(0, 4);
       var featGrid = document.getElementById('featuredGrid');
       if (featGrid) {
-        featGrid.innerHTML = featured.map(function(p) {
+        featGrid.innerHTML = featured.map(function (p) {
           return '<div class="col-6 col-sm-6 col-md-3 col-lg-3">' + BH.renderProductCard(p) + '</div>';
         }).join('');
       }
@@ -201,11 +224,12 @@
       // All Products
       var allGrid = document.getElementById('allProductsGrid');
       if (allGrid) {
-        allGrid.innerHTML = BH.products.map(function(p) {
+        allGrid.innerHTML = BH.products.map(function (p) {
           return '<div class="col-6 col-sm-6 col-lg-4 col-xl-3">' + BH.renderProductCard(p) + '</div>';
         }).join('');
       }
     });
   </script>
 </body>
+
 </html>
